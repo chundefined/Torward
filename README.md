@@ -28,6 +28,20 @@ Torward is an improved version based on the torghost-gn and darktor scripts, des
    ./install.sh
 ```
 
+## Security Enhancements
+
+This version includes several key security improvements to protect your identity and ensure better network configuration:
+
+1. **IPv6 Leak Prevention**  
+   IPv6 is now disabled to prevent any potential IP leaks. All traffic is forced through the Tor network by modifying system IPv6 settings in `network_config.py`.
+
+2. **Enhanced iptables Rules**  
+   Strict iptables rules are implemented to ensure only Tor traffic is allowed. Non-Tor traffic is blocked, DNS queries are routed through Tor, and only essential connections to Tor ports are permitted. Additionally, IPv6 traffic is blocked to prevent leaks.
+
+3. **Tor Configuration Adjustments**  
+   The `darktorrc` file has been updated to enforce that all traffic, including DNS queries, is routed through Tor, improving anonymity.
+
+
 ## TODO
 
 - Get the IP from the last Tor exit node: Currently, the script does not display the IP of the last Tor exit node in the console. This can be achieved by using Tor's API to get the public IP of the exit node.
