@@ -39,7 +39,7 @@ This version includes several key security improvements to protect your identity
    Strict iptables rules are implemented to ensure only Tor traffic is allowed. Non-Tor traffic is blocked, DNS queries are routed through Tor, and only essential connections to Tor ports are permitted. Additionally, IPv6 traffic is blocked to prevent leaks.
 
 3. **Tor Configuration Adjustments**  
-   The `darktorrc` file has been updated to enforce that all traffic, including DNS queries, is routed through Tor, improving anonymity.
+   The `torward` file has been updated to enforce that all traffic, including DNS queries, is routed through Tor, improving anonymity.
 
 
 ## TODO
