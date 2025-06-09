@@ -2,50 +2,75 @@
 
 import os
 import sys
-import signal
-import subprocess
+import re
 import requests
-from stem.control import Controller
+import subprocess
+
 
 def check_root():
     if os.geteuid() != 0:
         print("Please run as root using 'sudo'.")
         sys.exit(1)
 
+
 def sigint_handler(signum, frame):
     print("\nInterrupted by user. Exiting...")
     sys.exit(0)
 
+
 def get_tor_ip():
     try:
-        proxies = {
-            'http': 'socks5h://127.0.0.1:9040',
-            'https': 'socks5h://127.0.0.1:9040',
-        }
-        response = requests.get("http://check.torproject.org/", proxies=proxies, timeout=10)
-        if response.status_code == 200:
-            if "Your IP address appears to be" in response.text:
-                ip_start = response.text.find("Your IP address appears to be") + 31
-                ip_end = response.text.find(".", ip_start) + 1
-                return response.text[ip_start:ip_end].strip()
-        return "Unable to determine Tor IP."
+        # Use curl with icanhazip.com through the TOR proxy
+        result = subprocess.run(
+            ["curl", "-L", "--socks5", "127.0.0.1:9040",
+             "https://icanhazip.com"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+
+        if result.returncode == 0:
+            ip = result.stdout.strip()
+            if ip:
+                return ip
+
+        # Fallback in case the above fails
+        result = subprocess.run(
+            ["curl", "-L", "https://icanhazip.com"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+
+        if result.returncode == 0:
+            ip = result.stdout.strip()
+            if ip:
+                return ip
+
+        return "Unable to determine Tor IP"
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error determining Tor IP: {e}"
+
 
 def get_public_ip():
     try:
-        ip = subprocess.getoutput('curl -s https://ipinfo.io/ip')
-        return ip if ip else "Unknown"
-    except Exception:
-        return "Unknown"
+        response = requests.get("https://api.ipify.org?format=text",
+                                timeout=10)
+        if response.status_code == 200:
+            ip = response.text.strip()
+            if re.match(r'^[\d\.]+$', ip):
+                return ip
+        return "Unable to determine public IP."
+    except Exception as e:
+        return f"Error fetching public IP: {e}"
+
 
 def print_usage():
-    print("""
-        Torward usage:
-
-        -s, --start       Start torward
-        -r, --switch      Request new TOR exit node
-        -x, --stop        Stop torward
-        -h, --help        Show help
-    """)
+    print("Usage: sudo python3 torward.py [option]")
+    print("Options:")
+    print("  -s, --start    Start routing all traffic through TOR")
+    print("  -r, --switch   Switch TOR identity (request new circuit)")
+    print("  -x, --stop     Stop routing traffic through TOR")
+    print("  -c, --status   Show current TOR status")
+    print("  -h, --help     Print this help message")
     sys.exit(0)

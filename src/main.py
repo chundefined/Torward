@@ -1,11 +1,14 @@
-# main.py
-
 import sys
 import getopt
 import signal
 from utils import check_root, sigint_handler, print_usage
-from tor_control import start_torward, stop_torward, request_new_tor_circuit
-from constants import VERSION
+from tor_control import (
+    start_torward,
+    stop_torward,
+    request_new_tor_circuit,
+    check_tor_status,
+)
+
 
 def main():
     check_root()
@@ -13,23 +16,36 @@ def main():
 
     if len(sys.argv) <= 1:
         print_usage()
+        sys.exit(0)
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'srxhu', ['start', 'switch', 'stop', 'help', 'update'])
+        opts, _ = getopt.getopt(
+            sys.argv[1:],
+            "srxhuc",
+            ["start", "switch", "stop", "help", "update", "status"],
+        )
     except getopt.GetoptError:
         print_usage()
         sys.exit(2)
 
-    for o, a in opts:
-        if o in ('-h', '--help'):
+    # Force stdout to be unbuffered to ensure print statements appear
+    # immediately
+    sys.stdout.reconfigure(line_buffering=True)
+
+    for o, _ in opts:
+        if o in ("-h", "--help"):
             print_usage()
-        elif o in ('-s', '--start'):
+        elif o in ("-s", "--start"):
             start_torward()
-        elif o in ('-x', '--stop'):
+        elif o in ("-x", "--stop"):
             stop_torward()
-        elif o in ('-r', '--switch'):
+        elif o in ("-r", "--switch"):
             request_new_tor_circuit()
+        elif o in ("-c", "--status"):
+            check_tor_status()
         else:
             print_usage()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

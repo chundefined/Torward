@@ -14,14 +14,14 @@ RunAsDaemon 1
 Log notice file /var/log/tor/notices.log
 """
 
-RESOLV_CONF_ENTRY = 'nameserver 127.0.0.1'
+RESOLV_CONF_ENTRY = "nameserver 127.0.0.1"
 
-TORRC_PATH = '/etc/tor/torwardrc'
-RESOLV_CONF_PATH = '/etc/resolv.conf'
-RESOLV_CONF_BACKUP_PATH = '/etc/resolv.conf.bak'
+TORRC_PATH = "/etc/tor/torwardrc"
+RESOLV_CONF_PATH = "/etc/resolv.conf"
+RESOLV_CONF_BACKUP_PATH = "/etc/resolv.conf.bak"
 
-TOR_USER = 'debian-tor'
-TOR_SERVICE_NAME = 'tor'
+TOR_USER = "debian-tor"
+TOR_SERVICE_NAME = "tor"
 
-SYSCTL_CONF_PATH = '/etc/sysctl.conf'
-SYSCTL_CONF_BACKUP_PATH = '/etc/sysctl.conf.bak'
+SYSCTL_CONF_PATH = "/etc/sysctl.conf"
+SYSCTL_CONF_BACKUP_PATH = "/etc/sysctl.conf.bak"
